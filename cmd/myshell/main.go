@@ -32,7 +32,7 @@ func main() {
 
 		case "type":
 			if(strings.Contains(commands[1],"invalid")){
-				fmt.Fprintf(os.Stdout, "%s: command not found\n", commands[2])
+				fmt.Fprintf(os.Stdout, "%s: command not found\n", commands[1])
 			}
 			fmt.Println(commands[1] + " is a shell builtin")
 		default:
