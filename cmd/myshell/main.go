@@ -41,7 +41,7 @@ func main() {
 			exitCommand(command)
 		}
 
-		if(strings.Contains(command, "$ echo")){
+		if(strings.Contains(command, "echo")){
 			echoCommand(command)
 		}else{
 			handleCommand(command)
