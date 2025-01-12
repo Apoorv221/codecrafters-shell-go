@@ -31,7 +31,7 @@ func main() {
 			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(commands[1:], " "))
 
 		case "type":
-			fmt.Println(os.Stdout, commands[1] + " is a shell builtin")
+			fmt.Println(commands[1] + " is a shell builtin")
 		default:
 			fmt.Fprintf(os.Stdout, "%s: command not found\n", message)
 		}
