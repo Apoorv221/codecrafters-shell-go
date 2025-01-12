@@ -19,7 +19,7 @@ func exitCommand(command string){
 
 func echoCommand(command string){
 	commandLength := len(command)
-	newCommand := command[6:commandLength]
+	newCommand := command[5:commandLength]
 	fmt.Println(newCommand)
 }
 
