@@ -17,6 +17,12 @@ func exitCommand(command string){
 	os.Exit(0)
 }
 
+func echoCommand(command string){
+	commandLength := len(command)
+	newCommand := command[6:commandLength]
+	fmt.Println(newCommand)
+}
+
 func main() {
 	// Uncomment this block to pass the first stage
 	fmt.Fprint(os.Stdout, "$ ")
@@ -33,6 +39,10 @@ func main() {
 		
 		if(command == "exit 0"){
 			exitCommand(command)
+		}
+
+		if(command[0:5] == "$ echo"){
+			echoCommand(command)
 		}
 		handleCommand(command)
 		
