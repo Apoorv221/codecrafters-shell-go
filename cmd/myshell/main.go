@@ -30,7 +30,7 @@ func main() {
 
 		command = strings.TrimSuffix(command, "\n")
 		handleCommand(command)
-		//fmt.Fprint(os.Stdout,"$ ")
+		fmt.Fprint(os.Stdout,"$ ")
 	}	
 }
 
