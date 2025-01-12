@@ -14,7 +14,7 @@ func handleCommand (command string){
 	fmt.Println(command + ": command not found")
 }
 func exitCommand(command string){
-	os.Exit(1)
+	os.Exit(0)
 }
 
 func main() {
