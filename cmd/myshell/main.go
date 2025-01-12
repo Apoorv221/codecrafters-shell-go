@@ -13,6 +13,7 @@ var _ = fmt.Fprint
 func handleCommand (command string){
 	fmt.Println(command + ": command not found")
 	fmt.Println("$ exit 0")
+	os.Exit(1)
 }
 
 func main() {
