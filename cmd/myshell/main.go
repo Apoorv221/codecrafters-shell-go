@@ -12,7 +12,8 @@ var _ = fmt.Fprint
 
 func handleCommand (command string){
 	fmt.Println(command + ": command not found")
-	fmt.Println("$ " + "exit 0")
+}
+func exitCommand(command string){
 	os.Exit(1)
 }
 
@@ -29,7 +30,12 @@ func main() {
 		}
 
 		command = strings.TrimSuffix(command, "\n")
+		
+		if(command == "exit 0"){
+			exitCommand(command)
+		}
 		handleCommand(command)
+		
 		fmt.Fprint(os.Stdout,"$ ")
 	}	
 }
