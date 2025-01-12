@@ -20,6 +20,8 @@ func main() {
 		}
 		message = strings.TrimSpace(message)
 		commands := strings.Split(message, " ")
+		
+
 		switch commands[0] {
 		case "exit":
 			code, err := strconv.Atoi(commands[1])
@@ -34,7 +36,13 @@ func main() {
 			if(strings.Contains(commands[1],"invalid")){
 				fmt.Fprintf(os.Stdout, "%s: not found\n", commands[1])
 			}else{
-				fmt.Println(commands[1] + " is a shell builtin")
+				paths := strings.Split(os.Getenv("PATH"), ";")
+				for _, path := range paths{
+					exec := path + "/" + commands[1]
+					if _, err := os.Stat(exec); err != nil{
+						fmt.Fprintf(os.Stdout, "%s is %s\n",commands[1],exec)
+					}
+				}
 			}
 			
 		default:
