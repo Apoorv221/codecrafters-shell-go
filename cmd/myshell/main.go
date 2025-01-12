@@ -41,7 +41,7 @@ func main() {
 			exitCommand(command)
 		}
 
-		if(command[0:5] == "$ echo"){
+		if(command[0:6] == "$ echo"){
 			echoCommand(command)
 		}
 		handleCommand(command)
