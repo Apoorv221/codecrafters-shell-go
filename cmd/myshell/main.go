@@ -11,10 +11,12 @@ import (
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Fprint
+
 func main() {
+	fmt.Fprint(os.Stdout, "$ ")
 	// Uncomment this block to pass the first stage
 	for {
-		fmt.Fprint(os.Stdout, "$ ")
+		
 		message, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
 			os.Exit(1)
