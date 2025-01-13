@@ -13,10 +13,10 @@ import (
 var _ = fmt.Fprint
 
 func main() {
-	fmt.Fprint(os.Stdout, "$ ")
+	
 	// Uncomment this block to pass the first stage
 	for {
-		
+		fmt.Fprint(os.Stdout, "$ ")
 		message, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
 			os.Exit(1)
@@ -42,10 +42,10 @@ func main() {
 				fullPath := filepath.Join(path,commands[1])
 
 				if _,err := os.Stat(fullPath); err == nil {
-					fmt.Fprintf(os.Stdout,"%s is %v",commands[1],fullPath)
+					fmt.Fprintf(os.Stdout,"%s is %v\n",commands[1],fullPath)
 				}
 				if err != nil {
-					fmt.Fprintf(os.Stdout,"%s: not found", commands[1])
+					fmt.Fprintf(os.Stdout,"%s: not found\n", commands[1])
 				}
 			}
 			
