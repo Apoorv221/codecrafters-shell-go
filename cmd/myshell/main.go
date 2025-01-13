@@ -34,15 +34,16 @@ func main() {
 			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(commands[1:], " "))
 
 		case "type":
-			if(strings.Contains(commands[1],"invalid")){
-				fmt.Fprintf(os.Stdout, "%s: not found\n", commands[1])
-			}else{
-				directories := strings.Split(os.Getenv("PATH"), ";")
-				for _, dir := range directories {
-					fullPath := filepath.Join(dir, commands[1])
-					if _, err := os.Stat(fullPath); err == nil {
-						fmt.Fprintf(os.Stdout,"%s is %v",commands[1], fullPath)
-					}
+			paths := strings.Split(os.Getenv("PATH"), ":")
+
+			for _, path := range paths {
+				fullPath := filepath.Join(path,commands[1])
+
+				if _,err := os.Stat(fullPath); err == nil {
+					fmt.Fprintf(os.Stdout,"%s is %v",commands[1],fullPath)
+				}
+				if err == nil {
+					fmt.Fprintf(os.Stdout,"%s: not found", commands[1])
 				}
 			}
 			
