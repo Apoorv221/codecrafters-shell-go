@@ -1,56 +1,63 @@
 package main
-
 import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
-	"path/filepath"
 )
-
-// Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
-var _ = fmt.Fprint
-
+var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2}
 func main() {
-	
-	// Uncomment this block to pass the first stage
+	// You can use print statements as follows for debugging, they'll be visible when running tests.
+	// fmt.Println("Logs from your program will appear here!")
 	for {
+		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
-		message, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		// Wait for user input
+		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
+			fmt.Println("error: ", err)
 			os.Exit(1)
 		}
-		message = strings.TrimSpace(message)
-		commands := strings.Split(message, " ")
-		
-
-		switch commands[0] {
-		case "exit":
-			code, err := strconv.Atoi(commands[1])
-			if err != nil {
-				os.Exit(1)
+		// remove user enter
+		input = strings.TrimRight(input, "\n")
+		tokenizedInput := strings.Split(input, " ")
+		cmd := tokenizedInput[0]
+		if fn, exists := KnownCommands[cmd]; !exists {
+			fmt.Fprintf(os.Stdout, "%v: command not found\n", input)
+		} else {
+			switch fn {
+			case 0:
+				DoExit(tokenizedInput[1:])
+			case 1:
+				DoEcho(tokenizedInput[1:])
+			case 2:
+				DoType(tokenizedInput[1:])
 			}
-			os.Exit(code)
-		case "echo":
-			fmt.Fprintf(os.Stdout, "%s\n", strings.Join(commands[1:], " "))
-
-		case "type":
-			paths := strings.Split(os.Getenv("PATH"), ":")
-
-			for _, path := range paths {
-				fullPath := filepath.Join(path,commands[1])
-
-				if _,err := os.Stat(fullPath); err == nil {
-					fmt.Fprintf(os.Stdout,"%s is %v\n",commands[1],fullPath)
-					continue
-				} else if err!=nil {
-					fmt.Fprintf(os.Stderr,"%s: not found\n",commands[1])
-					continue
-				}
-			}
-		default:
-			fmt.Fprintf(os.Stdout, "%s: command not found\n", message)
 		}
+	}
 }
+func DoExit(params []string) {
+	os.Exit(0)
+}
+func DoEcho(params []string) {
+	output := strings.Join(params, " ")
+	fmt.Fprintf(os.Stdout, "%v\n", output)
+}
+func DoType(params []string) {
+	item := params[0]
+	if _, exists := KnownCommands[item]; exists {
+		class := "builtin"
+		fmt.Fprintf(os.Stdout, "%v is a shell %v\n", item, class)
+	} else {
+		env := os.Getenv("PATH")
+		paths := strings.Split(env, ":")
+		for _, path := range paths {
+			exec := path + "/" + item
+			if _, err := os.Stat(exec); err == nil {
+				fmt.Fprintf(os.Stdout, "%v is %v\n", item, exec)
+				return
+			}
+		}
+		fmt.Fprintf(os.Stdout, "%v not found\n", item)
+	}
 }
