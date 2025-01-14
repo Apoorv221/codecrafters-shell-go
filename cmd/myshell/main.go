@@ -31,7 +31,7 @@ func main() {
 
 			err := resultCommand.Run()
 			if err != nil {
-				fmt.Fprintf(os.Stdout,"%s: command not found\n",tokenizedInput[1])
+				fmt.Fprintf(os.Stdout,"%s: command not found\n",tokenizedInput[0])
 			} 
 		} else {
 			switch fn {
