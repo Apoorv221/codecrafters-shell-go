@@ -43,6 +43,8 @@ func main() {
 
 				if _,err := os.Stat(fullPath); err == nil {
 					fmt.Fprintf(os.Stdout,"%s is %v\n",commands[1],fullPath)
+				} else {
+					fmt.Fprintf(os.Stdout, "%s: not found\n", commands[1])
 				}
 			}
 			
