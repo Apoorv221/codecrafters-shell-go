@@ -24,7 +24,7 @@ func main() {
 		tokenizedInput := strings.Split(input, " ")
 		cmd := tokenizedInput[0]
 		if fn, exists := KnownCommands[cmd]; !exists {
-			fmt.Fprintf(os.Stdout, "%v: command not found\n", input)
+			
 			resultCommand := exec.Command(cmd,tokenizedInput[1:]...)
 			resultCommand.Stderr = os.Stderr
 			resultCommand.Stdout = os.Stdout
