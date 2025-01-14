@@ -44,7 +44,7 @@ func main() {
 				if _,err := os.Stat(fullPath); err == nil {
 					fmt.Fprintf(os.Stdout,"%s is %v\n",commands[1],fullPath)
 			}
-			
+		}
 		default:
 			fmt.Fprintf(os.Stdout, "%s: command not found\n", message)
 		}
