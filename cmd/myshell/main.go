@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"os/exec"
 )
 var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2}
 func main() {
@@ -24,6 +25,14 @@ func main() {
 		cmd := tokenizedInput[0]
 		if fn, exists := KnownCommands[cmd]; !exists {
 			fmt.Fprintf(os.Stdout, "%v: command not found\n", input)
+			resultCommand := exec.Command(cmd,tokenizedInput[1:]...)
+			resultCommand.Stderr = os.Stderr
+			resultCommand.Stdout = os.Stdout
+
+			err := resultCommand.Run()
+			if err != nil {
+				fmt.Fprintf(os.Stdout,"%s: command not found\n",tokenizedInput[1])
+			} 
 		} else {
 			switch fn {
 			case 0:
