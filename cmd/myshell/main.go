@@ -75,7 +75,7 @@ func DoType(params []string) {
 
 func DoPwd(){
 	currentPath,err := os.Getwd(); 
-	if err!=nil{
+	if err==nil{
 		fmt.Fprintln(os.Stdout,currentPath)
 		return
 	}
