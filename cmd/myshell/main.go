@@ -86,7 +86,7 @@ func DoPwd(){
 func DoCd(params []string){
 	err := os.Chdir(params[0])
 	if err!=nil{
-		fmt.Fprintf(os.Stdout,"cd: %v: No such file or directory\n",params)
+		fmt.Fprintf(os.Stdout,"cd: %v: No such file or directory\n",params[0])
 	}
 	
 }
