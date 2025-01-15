@@ -88,7 +88,5 @@ func DoCd(params []string){
 	if err!=nil{
 		fmt.Fprintln(os.Stdout,"cd: %s: No such file or directory",params)
 	}
-	currentPath,err := os.Getwd();
-	fmt.Println(os.Stdout,currentPath) 
 	
 }
