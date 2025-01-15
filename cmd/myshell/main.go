@@ -6,7 +6,7 @@ import (
 	"strings"
 	"os/exec"
 )
-var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2,"pwd" :3}
+var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2,"pwd" :3, "cd": 4}
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
 	// fmt.Println("Logs from your program will appear here!")
@@ -43,6 +43,8 @@ func main() {
 				DoType(tokenizedInput[1:])
 			case 3: 
 				DoPwd()
+			case 4:
+				DoCd(tokenizedInput[1:])
 			}
 		}
 	}
@@ -79,4 +81,14 @@ func DoPwd(){
 		fmt.Fprintln(os.Stdout,currentPath)
 		return
 	}
+}
+
+func DoCd(params []string){
+	err := os.Chdir(params)
+	if err!=nil{
+		fmt.Fprintln(os.Stdout,"cd: %s: No such file or directory",params)
+	}
+	currentPath,err := os.Getwd();
+	fmt.Println(os.Stdout,currentPath) 
+	
 }
