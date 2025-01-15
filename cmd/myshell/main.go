@@ -6,7 +6,7 @@ import (
 	"strings"
 	"os/exec"
 )
-var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2}
+var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2,"pwd" :3}
 func main() {
 	// You can use print statements as follows for debugging, they'll be visible when running tests.
 	// fmt.Println("Logs from your program will appear here!")
@@ -41,6 +41,8 @@ func main() {
 				DoEcho(tokenizedInput[1:])
 			case 2:
 				DoType(tokenizedInput[1:])
+			case 3: 
+				DoPwd()
 			}
 		}
 	}
@@ -68,5 +70,13 @@ func DoType(params []string) {
 			}
 		}
 		fmt.Fprintf(os.Stdout, "%v not found\n", item)
+	}
+}
+
+func DoPwd(){
+	currentPath,err := os.Getwd(); 
+	if err!=nil{
+		fmt.Fprintln(os.Stdout,currentPath)
+		return
 	}
 }
