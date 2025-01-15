@@ -85,7 +85,7 @@ func DoPwd(){
 
 func DoCd(params []string){
 	if(params[0] == "~"){
-		os.Chdir("../")
+		os.UserHomeDir()
 	}else{
 		err := os.Chdir(params[0])
 		if err!=nil{
