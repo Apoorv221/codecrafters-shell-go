@@ -70,7 +70,7 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	output := strings.Join(params, "")
+	output := strings.Join(params, " ")
 	fmt.Fprintf(os.Stdout, "%v\n", output)
 }
 func DoType(params []string) {
