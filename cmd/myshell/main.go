@@ -3,117 +3,143 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"os/exec"
+	"strconv"
+	"strings"
 )
-var KnownCommands = map[string]int{"exit": 0, "echo": 1, "type": 2,"pwd" :3, "cd": 4}
+var Cmds = make(map[string]func(args []string) error)
+func handleExit(args []string) error {
+	var (
+		exitCode int
+		err      error
+	)
+	if len(args) == 1 {
+		exitCode, err = strconv.Atoi(args[0])
+		if err != nil {
+			return err
+		}
+	}
+	os.Exit(exitCode)
+	return nil
+}
+func handleEcho(args []string) error {
+	if len(args) == 0 {
+		fmt.Fprintln(os.Stdout)
+		return nil
+	}
+	for i := 0; i < len(args)-1; i++ {
+		fmt.Fprintf(os.Stdout, "%s ", args[i])
+	}
+	fmt.Fprintln(os.Stdout, args[len(args)-1])
+	return nil
+}
+func locateCmd(cmd string) (string, bool) {
+	path := os.Getenv("PATH")
+	dirs := strings.Split(path, ":")
+	for _, dir := range dirs {
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+		for _, e := range entries {
+			if e.IsDir() {
+				continue
+			}
+			parts := strings.Split(e.Name(), ".")
+			name := parts[0]
+			if cmd == name {
+				return fmt.Sprintf("%s/%s", dir, name), true
+			}
+		}
+	}
+	return "", false
+}
+func handleType(args []string) error {
+	if len(args) != 1 {
+		return nil
+	}
+	cmd := args[0]
+	if _, ok := Cmds[cmd]; ok {
+		fmt.Fprintf(os.Stderr, "%s is a shell builtin\n", cmd)
+		return nil
+	}
+	if path, ok := locateCmd(cmd); ok {
+		fmt.Fprintf(os.Stdout, "%s is %s\n", cmd, path)
+		return nil
+	}
+	fmt.Fprintf(os.Stderr, "%s: not found\n", cmd)
+	return nil
+}
+func handlePwd(args []string) error {
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(os.Stdout, dir)
+	return nil
+}
+func handleCd(args []string) error {
+	if len(args) == 0 {
+		return nil
+	}
+	dir := args[0]
+	if dir == "~" {
+		dir = os.Getenv("HOME")
+	}
+	err := os.Chdir(dir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "cd: %s: No such file or directory\n", dir)
+	}
+	return nil
+}
 func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	// fmt.Println("Logs from your program will appear here!")
+	Cmds["exit"] = handleExit
+	Cmds["echo"] = handleEcho
+	Cmds["type"] = handleType
+	Cmds["pwd"] = handlePwd
+	Cmds["cd"] = handleCd
 	for {
-		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
-		// Wait for user input
 		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
-			fmt.Println("error: ", err)
-			os.Exit(1)
+			fmt.Fprintln(os.Stderr, err)
+			return
 		}
-		// remove user enter
-		// input = strings.TrimRight(input, "\n")
-		// tokenizedInput := strings.Split(input, " ")
-		
-		// Tokenizing the input.
 		s := strings.Trim(input, "\r\n")
-		var tokenizedInput []string
+		var tokens []string
 		for {
 			start := strings.Index(s, "'")
 			if start == -1 {
-				tokenizedInput = append(tokenizedInput, strings.Split(s, " ")...)
+				tokens = append(tokens, strings.Fields(s)...)
 				break
 			}
-			tokenizedInput = append(tokenizedInput, strings.Fields(s[:start])...)
+			tokens = append(tokens, strings.Fields(s[:start])...)
 			s = s[start+1:]
 			end := strings.Index(s, "'")
 			token := s[:end]
-			tokenizedInput = append(tokenizedInput, token)
+			tokens = append(tokens, token)
 			s = s[end+1:]
 		}
-		cmd := strings.ToLower(tokenizedInput[0]) 
-		if fn, exists := KnownCommands[cmd]; !exists {
-			
-			resultCommand := exec.Command(cmd,tokenizedInput[1:]...)
-			resultCommand.Stderr = os.Stderr
-			resultCommand.Stdout = os.Stdout
-
-			err := resultCommand.Run()
+		cmd := strings.ToLower(tokens[0])
+		var args []string
+		if len(tokens) > 1 {
+			args = tokens[1:]
+		}
+		if fn, ok := Cmds[cmd]; ok {
+			err := fn(args)
 			if err != nil {
-				fmt.Fprintf(os.Stdout,"%s: command not found\n",tokenizedInput[0])
-			} 
+				fmt.Fprintln(os.Stderr, err)
+			}
+		} else if path, ok := locateCmd(cmd); ok {
+			c := exec.Command(path, args...)
+			o, err := c.Output()
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			} else {
+				fmt.Fprint(os.Stdout, string(o))
+			}
 		} else {
-			switch fn {
-			case 0:
-				DoExit(tokenizedInput[1:])
-			case 1:
-				DoEcho(tokenizedInput[1:])
-			case 2:
-				DoType(tokenizedInput[1:])
-			case 3: 
-				DoPwd()
-			case 4:
-				DoCd(tokenizedInput[1:])
-			}
+			fmt.Fprintf(os.Stdout, "%s: command not found\n", cmd)
 		}
 	}
-}
-func DoExit(params []string) {
-	os.Exit(0)
-}
-func DoEcho(params []string) {
-	// Collapse multiple spaces into a single space
-	output := strings.Join(params, " ")
-	output = strings.Join(strings.Fields(output), " ")
-
-	// Print the final result
-	fmt.Fprintf(os.Stdout, "%s\n", output)
-}
-func DoType(params []string) {
-	item := params[0]
-	if _, exists := KnownCommands[item]; exists {
-		class := "builtin"
-		fmt.Fprintf(os.Stdout, "%v is a shell %v\n", item, class)
-	} else {
-		env := os.Getenv("PATH")
-		paths := strings.Split(env, ":")
-		for _, path := range paths {
-			exec := path + "/" + item
-			if _, err := os.Stat(exec); err == nil {
-				fmt.Fprintf(os.Stdout, "%v is %v\n", item, exec)
-				return
-			}
-		}
-		fmt.Fprintf(os.Stdout, "%v not found\n", item)
-	}
-}
-
-func DoPwd(){
-	currentPath,err := os.Getwd(); 
-	if err==nil{
-		fmt.Fprintln(os.Stdout,currentPath)
-		return
-	}
-}
-
-func DoCd(params []string){
-	if(params[0] == "~"){
-		homePath,_ := os.UserHomeDir()
-		os.Chdir(homePath)		
-	}else{
-		err := os.Chdir(params[0])
-		if err!=nil{
-			fmt.Fprintf(os.Stdout,"cd: %v: No such file or directory\n",params[0])
-		}
-	}
-	
-	
 }
