@@ -20,26 +20,9 @@ func main() {
 			os.Exit(1)
 		}
 		// remove user enter
-		// input = strings.TrimRight(input, "\n")
-		// tokenizedInput := strings.Split(input, " ")
-		
-		// Tokenizing the input.
-		s := strings.Trim(input, "\r\n")
-		var tokenizedInput []string
-		for {
-			start := strings.Index(s, "'")
-			if start == -1 {
-				tokenizedInput = append(tokenizedInput, strings.Split(s, " ")...)
-				break
-			}
-			tokenizedInput = append(tokenizedInput, strings.Fields(s[:start])...)
-			s = s[start+1:]
-			end := strings.Index(s, "'")
-			token := s[:end]
-			tokenizedInput = append(tokenizedInput, token)
-			s = s[end+1:]
-		}
-		cmd := strings.ToLower(tokenizedInput[0]) 
+		input = strings.TrimRight(input, "\n")
+		tokenizedInput := strings.Split(input, " ")
+		cmd := tokenizedInput[0]
 		if fn, exists := KnownCommands[cmd]; !exists {
 			
 			resultCommand := exec.Command(cmd,tokenizedInput[1:]...)
@@ -70,19 +53,8 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	var result []string
-	for _, param := range params {
-		// Preserve individual parameters without additional modification
-		result = append(result, param)
-	}
-	// Join without modifying spaces from quoted input
-	output := strings.Join(result, " ")
-
-	// Normalize spaces only outside of quoted content
-	output = strings.ReplaceAll(output, "  ", " ") // Handles multiple adjacent spaces minimally
-
-	// Print the result
-	fmt.Fprintln(os.Stdout, output)
+	output := strings.Join(params, " ")
+	fmt.Fprintf(os.Stdout, "%v\n", output)
 }
 func DoType(params []string) {
 	item := params[0]
