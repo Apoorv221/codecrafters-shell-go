@@ -29,7 +29,7 @@ func main() {
 		for {
 			start := strings.Index(s, "'")
 			if start == -1 {
-				tokenizedInput = append(tokenizedInput, strings.Fields(s)...)
+				tokenizedInput = append(tokenizedInput, strings.Split(s, " ")...)
 				break
 			}
 			tokenizedInput = append(tokenizedInput, strings.Fields(s[:start])...)
@@ -70,8 +70,7 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	output := strings.Join(params, " ")
-	fmt.Fprintf(os.Stdout, "%v\n", output)
+	fmt.Fprintln(os.Stdout, strings.Join(params, " "))
 }
 func DoType(params []string) {
 	item := params[0]
