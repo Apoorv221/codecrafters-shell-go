@@ -70,15 +70,17 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	if len(params) == 1 && strings.Contains(params[0], " ") {
-		// If it's a single argument with spaces, preserve the spaces
-		fmt.Fprintf(os.Stdout, "%s\n", params[0])
-	} else {
-		// Otherwise, collapse multiple spaces
-		output := strings.Join(params, " ")
-		output = strings.Join(strings.Fields(output), " ") // Collapse spaces
-		fmt.Fprintf(os.Stdout, "%s\n", output)
+	var result strings.Builder
+	for i, param := range params {
+		// Append the parameter as-is
+		result.WriteString(param)
+
+		// If this is not the last parameter, add a space
+		if i < len(params)-1 {
+			result.WriteString(" ")
+		}
 	}
+	fmt.Fprintf(os.Stdout, "%s\n", result.String())
 }
 func DoType(params []string) {
 	item := params[0]
