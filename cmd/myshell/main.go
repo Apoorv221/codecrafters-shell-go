@@ -21,7 +21,7 @@ func main() {
 		}
 		// remove user enter
 		input = strings.TrimRight(input, "\n")
-		tokenizedInput := strings.Split(input, " ")
+		tokenizedInput := tokenizeInput(input)
 		cmd := tokenizedInput[0]
 		if fn, exists := KnownCommands[cmd]; !exists {
 			
@@ -95,4 +95,46 @@ func DoCd(params []string){
 	}
 	
 	
+}
+func tokenizeInput(input string) []string {
+	var tokens []string
+	var currentToken strings.Builder
+	var inQuotes bool
+	var quoteChar rune
+
+	for _, char := range input {
+		switch char {
+		case '\'', '"':
+			if inQuotes && char == quoteChar {
+				// Close the quote
+				inQuotes = false
+			} else if !inQuotes {
+				// Open a new quote
+				inQuotes = true
+				quoteChar = char
+			} else {
+				// Inside quotes, add the quote character
+				currentToken.WriteRune(char)
+			}
+		case ' ':
+			if inQuotes {
+				// Inside quotes, spaces are part of the token
+				currentToken.WriteRune(char)
+			} else if currentToken.Len() > 0 {
+				// Outside quotes, end of a token
+				tokens = append(tokens, currentToken.String())
+				currentToken.Reset()
+			}
+		default:
+			// Normal characters
+			currentToken.WriteRune(char)
+		}
+	}
+
+	// Add the last token if any
+	if currentToken.Len() > 0 {
+		tokens = append(tokens, currentToken.String())
+	}
+
+	return tokens
 }
