@@ -101,8 +101,16 @@ func tokenizeInput(input string) []string {
 	var currentToken strings.Builder
 	var inQuotes bool
 	var quoteChar rune
+	var escapeNext bool
 
 	for _, char := range input {
+		
+		if escapeNext {
+			currentToken.WriteRune(char)
+			escapeNext = false
+			continue
+		}
+
 		switch char {
 		case '\'', '"':
 			if inQuotes && char == quoteChar {
@@ -125,6 +133,8 @@ func tokenizeInput(input string) []string {
 				tokens = append(tokens, currentToken.String())
 				currentToken.Reset()
 			}
+		case '\\':
+			escapeNext = true
 		default:
 			// Normal characters
 			currentToken.WriteRune(char)
