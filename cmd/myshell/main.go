@@ -70,19 +70,14 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	var output strings.Builder
-	for _, param := range params {
-		if strings.Contains(param, "'") {
-			// Remove single quotes while preserving spaces inside
-			param = strings.ReplaceAll(param, "'", "")
-		}
-		output.WriteString(param)
-		output.WriteString(" ") // Add space after each param
-	}
+		// Join the input parameters into a single string
+		output := strings.Join(params, " ")
 
-	// Trim trailing space and print the result
-	finalOutput := strings.TrimSpace(output.String())
-	fmt.Fprintf(os.Stdout, "%s\n", finalOutput)
+		// Normalize spaces: collapse multiple spaces into one
+		output = strings.Join(strings.Fields(output), " ")
+	
+		// Print the final output
+		fmt.Fprintln(os.Stdout, output)
 }
 func DoType(params []string) {
 	item := params[0]
