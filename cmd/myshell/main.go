@@ -20,9 +20,26 @@ func main() {
 			os.Exit(1)
 		}
 		// remove user enter
-		input = strings.TrimRight(input, "\n")
-		tokenizedInput := strings.Split(input, " ")
-		cmd := tokenizedInput[0]
+		// input = strings.TrimRight(input, "\n")
+		// tokenizedInput := strings.Split(input, " ")
+		
+		// Tokenizing the input.
+		s := strings.Trim(input, "\r\n")
+		var tokenizedInput []string
+		for {
+			start := strings.Index(s, "'")
+			if start == -1 {
+				tokenizedInput = append(tokenizedInput, strings.Fields(s)...)
+				break
+			}
+			tokenizedInput = append(tokenizedInput, strings.Fields(s[:start])...)
+			s = s[start+1:]
+			end := strings.Index(s, "'")
+			token := s[:end]
+			tokenizedInput = append(tokenizedInput, token)
+			s = s[end+1:]
+		}
+		cmd := strings.ToLower(tokenizedInput[0]) 
 		if fn, exists := KnownCommands[cmd]; !exists {
 			
 			resultCommand := exec.Command(cmd,tokenizedInput[1:]...)
