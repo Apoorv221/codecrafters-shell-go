@@ -70,7 +70,8 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-	fmt.Fprintln(os.Stdout, strings.Join(params, " "))
+	output := strings.Join(params, " ")
+	fmt.Fprintf(os.Stdout, "%s\n", output)
 }
 func DoType(params []string) {
 	item := params[0]
