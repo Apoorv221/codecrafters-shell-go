@@ -70,14 +70,20 @@ func DoExit(params []string) {
 	os.Exit(0)
 }
 func DoEcho(params []string) {
-		// Join parameters with a single space between them
-		output := strings.Join(params, " ")
+	var result strings.Builder
 
-		// Collapse multiple spaces into a single space
-		output = strings.Join(strings.Fields(output), " ")
-	
-		// Print the result
-		fmt.Fprintf(os.Stdout, "%s\n", output)
+	for i, param := range params {
+		// Append the parameter as-is
+		result.WriteString(param)
+
+		// Only add a space if the next parameter does not start immediately (not concatenated)
+		if i < len(params)-1 && !strings.HasSuffix(params[i], "'") && !strings.HasPrefix(params[i+1], "'") {
+			result.WriteString(" ")
+		}
+	}
+
+	// Print the final output
+	fmt.Fprintf(os.Stdout, "%s\n", result.String())
 }
 func DoType(params []string) {
 	item := params[0]
